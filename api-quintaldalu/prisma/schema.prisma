@@ -1,0 +1,38 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Tabela do Cardápio
+model Product {
+  id          Int      @id @default(autoincrement())
+  category    String
+  name        String
+  description String
+  price       Float
+  image       String?
+  isActive    Boolean  @default(true) 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Tabela de Gastos da Pizzaria
+model Expense {
+  id          Int      @id @default(autoincrement())
+  description String
+  amount      Float
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+}
