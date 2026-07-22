@@ -107,6 +107,7 @@ function AdminDashboard() {
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('Sabores Tradicionais');
+  const [image, setImage] = useState('');
 
   // Estado Financeiro
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
@@ -147,9 +148,9 @@ function AdminDashboard() {
       const res = await fetch(`${API_URL}/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ nome: name, description, price: Number(price), category })
+        body: JSON.stringify({ nome: name, description, price: Number(price), category, image: image || undefined })
       });
-      if (res.ok) { setName(''); setDescription(''); setPrice(''); fetchProducts(); }
+      if (res.ok) { setName(''); setDescription(''); setPrice(''); setImage(''); fetchProducts(); }
       else alert('Erro ao cadastrar produto.');
     } catch (err) { console.error(err); }
   };
@@ -284,6 +285,11 @@ function AdminDashboard() {
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Preço (R$)</label>
                   <input type="number" step="0.01" value={price} onChange={(e) => setPrice(e.target.value)}
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all" required />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Link da Imagem (opcional)</label>
+                  <input type="url" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://... (ou deixe vazio para padrão)"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Categoria</label>

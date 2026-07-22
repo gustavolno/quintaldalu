@@ -15,6 +15,7 @@ export class ProductsService {
         price: createProductDto.price,
         description: createProductDto.description,
         category: createProductDto.category,
+        image: createProductDto.image,
       }, 
     });
   }

@@ -18,8 +18,8 @@ export class CreateProductDto {
   price: number;
 
   @IsString()
-  @IsOptional() // Campo opcional (a Lu pode não ter a foto na hora de cadastrar)
-  imageUrl?: string;
+  @IsOptional() // Campo opcional
+  image?: string;
 
   @IsBoolean()
   @IsOptional()
