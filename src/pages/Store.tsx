@@ -128,47 +128,47 @@ export default function Store() {
       .join('\n');
 
     const enderecoText = checkoutData.tipoServico === 'delivery'
-      ? `📍 *Endereço de Entrega*
+      ? `\u{1F4CD} *Endereço de Entrega*
 ${checkoutData.rua}, ${checkoutData.numero}${checkoutData.complemento ? ` — ${checkoutData.complemento}` : ''}
 Bairro: ${checkoutData.bairro}${checkoutData.referencia ? `\nReferência: ${checkoutData.referencia}` : ''}`
-      : `📍 *Tipo:* Retirada no local`;
+      : `\u{1F4CD} *Tipo:* Retirada no local`;
 
     const trocoText = checkoutData.pagamento === 'Dinheiro' && checkoutData.troco
       ? `\nTroco para: R$ ${checkoutData.troco}`
       : '';
 
     const obsText = checkoutData.observacoes
-      ? `\n\n📝 *Observações:* ${checkoutData.observacoes}`
+      ? `\n\n\u{1F4DD} *Observações:* ${checkoutData.observacoes}`
       : '';
 
     const message =
-`🍕 *PEDIDO ${orderNum}* — Quintal da Lu
-📅 ${dateStr} às ${timeStr}
-🔗 quintaldalu.vercel.app
+`\u{1F355} *PEDIDO ${orderNum}* — Quintal da Lu
+\u{1F4C5} ${dateStr} às ${timeStr}
+\u{1F517} quintaldalu.vercel.app
 
 ━━━━━━━━━━━━━━━━━━
-👤 *Dados do Cliente*
+\u{1F464} *Dados do Cliente*
 Nome: ${checkoutData.nome}
 Telefone: ${checkoutData.telefone}
 
-🚗 *Tipo de Serviço:* ${checkoutData.tipoServico === 'delivery' ? 'Delivery' : 'Retirada no Local'}
+\u{1F697} *Tipo de Serviço:* ${checkoutData.tipoServico === 'delivery' ? 'Delivery' : 'Retirada no Local'}
 ${enderecoText}
 
 ━━━━━━━━━━━━━━━━━━
-🛒 *Itens do Pedido*
+\u{1F6D2} *Itens do Pedido*
 ${itemsText}
 
 ━━━━━━━━━━━━━━━━━━
-💰 *Valores*
+\u{1F4B0} *Valores*
 Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}
 Taxa de entrega: ${taxaEntrega > 0 ? `R$ ${taxaEntrega.toFixed(2).replace('.', ',')}` : 'Grátis (Retirada)'}
 *Total: R$ ${totalFinal.toFixed(2).replace('.', ',')}*
 
-💳 *Pagamento:* ${checkoutData.pagamento}${trocoText}
+\u{1F4B3} *Pagamento:* ${checkoutData.pagamento}${trocoText}
 Estado: Pendente${obsText}
 
 ━━━━━━━━━━━━━━━━━━
-✅ Pedido realizado pelo site`;
+\u2705 Pedido realizado pelo site`;
 
     window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
 
