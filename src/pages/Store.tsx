@@ -171,7 +171,22 @@ Estado: Pendente${obsText}
 ✅ Pedido realizado pelo site`;
 
     window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+
+    // Zera o carrinho e todos os dados do formulário após confirmar o pedido
     setCart([]);
+    setCheckoutData({
+      nome: '',
+      telefone: '',
+      tipoServico: 'delivery',
+      rua: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      referencia: '',
+      pagamento: 'PIX',
+      troco: '',
+      observacoes: '',
+    });
     closeCart();
   };
 
