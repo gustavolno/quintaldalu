@@ -170,7 +170,7 @@ Estado: Pendente${obsText}
 ━━━━━━━━━━━━━━━━━━
 ✅ Pedido realizado pelo site`;
 
-    window.open(`https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
 
     // Zera o carrinho e todos os dados do formulário após confirmar o pedido
     setCart([]);
