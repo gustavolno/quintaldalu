@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Minus, X, Trash2, ShoppingBag, Pizza, ChevronRight, MapPin, User, CreditCard, Bike, Store as StoreIcon, MessageCircle, CheckCircle2, ChevronLeft } from 'lucide-react';
+import { ShoppingCart, Plus, Minus, X, Trash2, ShoppingBag, Pizza, ChevronRight, MapPin, User, CreditCard, Bike, Store as StoreIcon, CheckCircle2, ChevronLeft } from 'lucide-react';
 
 interface MenuItem {
   id: number;
@@ -226,7 +226,7 @@ Estado: Pendente${obsText}
           closeCart();
         }
       })
-      .catch(err => {
+      .catch(() => {
         setIsCheckoutLoading(false);
         alert('Erro ao processar pedido. Você será redirecionado para o WhatsApp.');
         window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
