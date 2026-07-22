@@ -52,19 +52,30 @@ export default function Store() {
   const [activeCategory, setActiveCategory] = useState<string>('Todas');
   const [checkoutStep, setCheckoutStep] = useState<0 | 1 | 2 | 3>(0); // 0=cart, 1=dados, 2=endereço, 3=pagamento
 
-  const [checkoutData, setCheckoutData] = useState<CheckoutData>({
-    nome: '',
-    telefone: '',
-    tipoServico: 'delivery',
-    rua: '',
-    numero: '',
-    complemento: '',
-    bairro: '',
-    referencia: '',
-    pagamento: 'PIX',
-    troco: '',
-    observacoes: '',
+  const [checkoutData, setCheckoutData] = useState<CheckoutData>(() => {
+    const saved = localStorage.getItem('quintaldalu_customer');
+    if (saved) {
+      try { return JSON.parse(saved); } catch (e) {}
+    }
+    return {
+      nome: '',
+      telefone: '',
+      tipoServico: 'delivery',
+      rua: '',
+      numero: '',
+      complemento: '',
+      bairro: '',
+      referencia: '',
+      pagamento: 'PIX',
+      troco: '',
+      observacoes: '',
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('quintaldalu_customer', JSON.stringify(checkoutData));
+  }, [checkoutData]);
+
 
   useEffect(() => {
     fetch(`${API_URL}/products`)
@@ -172,21 +183,13 @@ Estado: Pendente${obsText}
 
     window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
 
-    // Zera o carrinho e todos os dados do formulário após confirmar o pedido
+    // Limpa o carrinho e apenas as observações e o troco (mantém os dados pessoais salvos)
     setCart([]);
-    setCheckoutData({
-      nome: '',
-      telefone: '',
-      tipoServico: 'delivery',
-      rua: '',
-      numero: '',
-      complemento: '',
-      bairro: '',
-      referencia: '',
-      pagamento: 'PIX',
+    setCheckoutData(prev => ({
+      ...prev,
       troco: '',
       observacoes: '',
-    });
+    }));
     closeCart();
   };
 
