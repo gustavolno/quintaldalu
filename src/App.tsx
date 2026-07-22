@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Store from './pages/Store';
 import {
-  Plus, Trash2, LogOut, ShieldCheck, Pizza,
+  Plus, Trash2, LogOut, ShieldCheck, Pizza, Edit,
   TrendingUp, TrendingDown, DollarSign, Package,
   BarChart3, ChevronDown, Filter, ArrowUpCircle, ArrowDownCircle
 } from 'lucide-react';
@@ -108,6 +108,7 @@ function AdminDashboard() {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('Sabores Tradicionais');
   const [image, setImage] = useState('');
+  const [editingProductId, setEditingProductId] = useState<number | null>(null);
 
   // Estado Financeiro
   const [transacoes, setTransacoes] = useState<Transacao[]>([]);
@@ -156,16 +157,36 @@ function AdminDashboard() {
     }
   };
 
+  const cancelEdit = () => {
+    setEditingProductId(null);
+    setName('');
+    setDescription('');
+    setPrice('');
+    setCategory('Sabores Tradicionais');
+    setImage('');
+  };
+
+  const handleEditClick = (p: Product) => {
+    setEditingProductId(p.id);
+    setName(p.nome);
+    setDescription(p.description || '');
+    setPrice(String(p.price));
+    setCategory(p.category || 'Sabores Tradicionais');
+    setImage(p.image || '');
+  };
+
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch(`${API_URL}/products`, {
-        method: 'POST',
+      const url = editingProductId ? `${API_URL}/products/${editingProductId}` : `${API_URL}/products`;
+      const method = editingProductId ? 'PATCH' : 'POST';
+      const res = await fetch(url, {
+        method,
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({ nome: name, description, price: Number(price), category, image: image || undefined })
       });
-      if (res.ok) { setName(''); setDescription(''); setPrice(''); setImage(''); fetchProducts(); }
-      else alert('Erro ao cadastrar produto.');
+      if (res.ok) { cancelEdit(); fetchProducts(); }
+      else alert(`Erro ao ${editingProductId ? 'editar' : 'cadastrar'} produto.`);
     } catch (err) { console.error(err); }
   };
 
@@ -282,7 +303,11 @@ function AdminDashboard() {
             {/* Formulário de Cadastro */}
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
               <h2 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <Plus size={18} className="text-red-600" /> Novo Produto
+                {editingProductId ? (
+                  <><Edit size={18} className="text-red-600" /> Editar Produto</>
+                ) : (
+                  <><Plus size={18} className="text-red-600" /> Novo Produto</>
+                )}
               </h2>
               <form onSubmit={handleCreateProduct} className="space-y-3">
                 <div>
@@ -327,10 +352,18 @@ function AdminDashboard() {
                     <option value="Bebidas">Bebidas</option>
                   </select>
                 </div>
-                <button type="submit"
-                  className="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2.5 rounded-xl transition-all shadow-md text-sm mt-1">
-                  Cadastrar Produto
-                </button>
+                <div className="flex gap-2 mt-1">
+                  <button type="submit"
+                    className="flex-1 bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2.5 rounded-xl transition-all shadow-md text-sm">
+                    {editingProductId ? 'Salvar Alterações' : 'Cadastrar Produto'}
+                  </button>
+                  {editingProductId && (
+                    <button type="button" onClick={cancelEdit}
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 px-4 rounded-xl transition-all text-sm border border-gray-200">
+                      Cancelar
+                    </button>
+                  )}
+                </div>
               </form>
             </div>
 
@@ -350,10 +383,16 @@ function AdminDashboard() {
                         <h4 className="font-bold text-sm text-gray-800">{p.nome}</h4>
                         <p className="text-xs text-gray-500">{p.category} • {formatCurrency(Number(p.price))}</p>
                       </div>
-                      <button onClick={() => handleDelete(p.id)}
-                        className="p-2 text-gray-300 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50">
-                        <Trash2 size={16} />
-                      </button>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEditClick(p)}
+                          className="p-2 text-gray-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50" title="Editar">
+                          <Edit size={16} />
+                        </button>
+                        <button onClick={() => handleDelete(p.id)}
+                          className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50" title="Excluir">
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
