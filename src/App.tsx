@@ -4,7 +4,8 @@ import Store from './pages/Store';
 import {
   Plus, Trash2, LogOut, ShieldCheck, Pizza, Edit,
   TrendingUp, TrendingDown, DollarSign, Package,
-  BarChart3, ChevronDown, Filter, ArrowUpCircle, ArrowDownCircle
+  BarChart3, ChevronDown, Filter, ArrowUpCircle, ArrowDownCircle,
+  MessageCircle, Smartphone, CheckCircle2, AlertCircle
 } from 'lucide-react';
 
 interface Product {
@@ -100,7 +101,7 @@ function Login() {
 
 // --- PAINEL ADMINISTRATIVO ---
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState<'produtos' | 'financeiro'>('produtos');
+  const [activeTab, setActiveTab] = useState<'produtos' | 'financeiro' | 'whatsapp'>('produtos');
 
   // Estado Produtos
   const [products, setProducts] = useState<Product[]>([]);
@@ -123,6 +124,10 @@ function AdminDashboard() {
   const [filtroFim, setFiltroFim] = useState('');
   const [loadingFin, setLoadingFin] = useState(false);
 
+  // Estado WhatsApp
+  const [waStatus, setWaStatus] = useState<'DISCONNECTED' | 'WAITING_QR' | 'CONNECTED'>('DISCONNECTED');
+  const [waQr, setWaQr] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const token = localStorage.getItem('token');
 
@@ -134,6 +139,40 @@ function AdminDashboard() {
   useEffect(() => {
     if (activeTab === 'financeiro') fetchFinanceiro();
   }, [activeTab, filtroInicio, filtroFim]);
+
+  useEffect(() => {
+    let interval: any;
+    if (activeTab === 'whatsapp') {
+      fetchWaStatus();
+      interval = setInterval(fetchWaStatus, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [activeTab]);
+
+  // --- WhatsApp ---
+  const fetchWaStatus = async () => {
+    try {
+      const res = await fetch(`${API_URL}/whatsapp/status`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setWaStatus(data.status);
+        setWaQr(data.qr);
+      }
+    } catch (e) { console.error(e); }
+  };
+
+  const handleWaLogout = async () => {
+    if (!confirm('Desconectar o robô do WhatsApp atual?')) return;
+    try {
+      await fetch(`${API_URL}/whatsapp/logout`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      fetchWaStatus();
+    } catch (e) { console.error(e); }
+  };
 
   // --- Produtos ---
   const fetchProducts = () => {
@@ -280,23 +319,84 @@ function AdminDashboard() {
 
       {/* Tabs */}
       <div className="bg-white border-b border-gray-100 px-6">
-        <div className="flex gap-0 max-w-5xl mx-auto">
+        <div className="flex gap-0 max-w-5xl mx-auto overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('produtos')}
-            className={`flex items-center gap-2 px-5 py-3.5 text-sm font-semibold border-b-2 transition-all ${activeTab === 'produtos' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+            className={`flex items-center gap-2 px-5 py-3.5 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${activeTab === 'produtos' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
           >
             <Package size={16} /> Produtos
           </button>
           <button
             onClick={() => setActiveTab('financeiro')}
-            className={`flex items-center gap-2 px-5 py-3.5 text-sm font-semibold border-b-2 transition-all ${activeTab === 'financeiro' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+            className={`flex items-center gap-2 px-5 py-3.5 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${activeTab === 'financeiro' ? 'border-red-600 text-red-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
           >
             <BarChart3 size={16} /> Financeiro
+          </button>
+          <button
+            onClick={() => setActiveTab('whatsapp')}
+            className={`flex items-center gap-2 px-5 py-3.5 text-sm font-semibold border-b-2 transition-all whitespace-nowrap ${activeTab === 'whatsapp' ? 'border-green-600 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-800'}`}
+          >
+            <MessageCircle size={16} /> WhatsApp Bot
           </button>
         </div>
       </div>
 
       <main className="max-w-5xl mx-auto px-4 py-6">
+
+        {/* ===== ABA WHATSAPP ===== */}
+        {activeTab === 'whatsapp' && (
+          <div className="max-w-xl mx-auto space-y-6">
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+              <h2 className="text-xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
+                <MessageCircle className="text-green-600" /> Atendimento Automático
+              </h2>
+              <p className="text-gray-500 text-sm mb-6">
+                Conecte seu WhatsApp da loja. O robô responderá automaticamente com o cardápio sempre que alguém disser "boa noite", "olá", "cardápio", etc.
+              </p>
+
+              {waStatus === 'WAITING_QR' && waQr && (
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <div className="p-4 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                    <img src={waQr} alt="QR Code WhatsApp" className="w-64 h-64 mx-auto rounded-lg" />
+                  </div>
+                  <div className="flex items-center gap-2 text-yellow-600 bg-yellow-50 px-4 py-2 rounded-xl text-sm font-semibold">
+                    <AlertCircle size={18} />
+                    <span>Aguardando leitura do QR Code...</span>
+                  </div>
+                  <ol className="text-left text-sm text-gray-600 space-y-2 max-w-sm mt-4">
+                    <li>1. Abra o WhatsApp no celular da loja</li>
+                    <li>2. Vá em Configurações &gt; Aparelhos Conectados</li>
+                    <li>3. Toque em "Conectar um Aparelho"</li>
+                    <li>4. Aponte a câmera para o QR Code acima</li>
+                  </ol>
+                </div>
+              )}
+
+              {waStatus === 'CONNECTED' && (
+                <div className="flex flex-col items-center justify-center space-y-6 py-6">
+                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                    <CheckCircle2 size={40} className="text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">Robô Conectado e Ativo!</h3>
+                    <p className="text-sm text-gray-500 mt-1">Sua pizzaria já está respondendo no automático.</p>
+                  </div>
+                  <button onClick={handleWaLogout}
+                    className="flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2.5 px-6 rounded-xl transition-all text-sm">
+                    <Smartphone size={18} /> Desconectar Celular
+                  </button>
+                </div>
+              )}
+
+              {waStatus === 'DISCONNECTED' && !waQr && (
+                <div className="flex flex-col items-center justify-center space-y-4 py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                  <p className="text-gray-500 text-sm">Iniciando sistema do WhatsApp...</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* ===== ABA PRODUTOS ===== */}
         {activeTab === 'produtos' && (
