@@ -50,7 +50,13 @@ export default function Store() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>('Todas');
-  const [checkoutStep, setCheckoutStep] = useState<0 | 1 | 2 | 3>(0); // 0=cart, 1=dados, 2=endereço, 3=pagamento
+  const [checkoutStep, setCheckoutStep] = useState<0 | 1 | 2 | 3 | 4>(0); // 0=cart, 1=dados, 2=endereço, 3=pagamento, 4=sucesso
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  // Meio a Meio
+  const [isHalfAndHalfOpen, setIsHalfAndHalfOpen] = useState(false);
+  const [half1, setHalf1] = useState<MenuItem | null>(null);
+  const [half2, setHalf2] = useState<MenuItem | null>(null);
 
   const [checkoutData, setCheckoutData] = useState<CheckoutData>(() => {
     const saved = localStorage.getItem('quintaldalu_customer');
@@ -126,6 +132,25 @@ export default function Store() {
   const openCart = () => { setIsCartOpen(true); setCheckoutStep(0); };
   const closeCart = () => { setIsCartOpen(false); setCheckoutStep(0); };
 
+  // --- MEIO A MEIO ---
+  const addHalfAndHalfToCart = () => {
+    if (!half1 || !half2) return;
+    const price = (half1.price + half2.price) / 2;
+    const item: MenuItem = {
+      id: Date.now(),
+      nome: `Meio a Meio: ${half1.nome} / ${half2.nome}`,
+      description: `Metade ${half1.nome} e Metade ${half2.nome}`,
+      price,
+      image: half1.image,
+      category: 'Meio a Meio'
+    };
+    addToCart(item);
+    setIsHalfAndHalfOpen(false);
+    setHalf1(null);
+    setHalf2(null);
+    openCart();
+  };
+
   // --- CHECKOUT ---
   const handleCheckout = () => {
     if (cart.length === 0) return;
@@ -179,18 +204,36 @@ Taxa de entrega: ${taxaEntrega > 0 ? `R$ ${taxaEntrega.toFixed(2).replace('.', '
 Estado: Pendente${obsText}
 
 ━━━━━━━━━━━━━━━━━━
-\u2705 Pedido realizado pelo site`;
+✅ Pedido realizado pelo site`;
 
-    window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
-
-    // Limpa o carrinho e apenas as observações e o troco (mantém os dados pessoais salvos)
-    setCart([]);
-    setCheckoutData(prev => ({
-      ...prev,
-      troco: '',
-      observacoes: '',
-    }));
-    closeCart();
+    setIsCheckoutLoading(true);
+    fetch(`${API_URL}/whatsapp/send-order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: checkoutData.telefone, message })
+    }).then(res => res.json())
+      .then(data => {
+        setIsCheckoutLoading(false);
+        if (data.success) {
+          setCart([]);
+          setCheckoutData(prev => ({ ...prev, troco: '', observacoes: '' }));
+          setCheckoutStep(4);
+        } else {
+          alert('Não foi possível enviar o pedido automaticamente. Você será redirecionado para o WhatsApp.');
+          window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
+          setCart([]);
+          setCheckoutData(prev => ({ ...prev, troco: '', observacoes: '' }));
+          closeCart();
+        }
+      })
+      .catch(err => {
+        setIsCheckoutLoading(false);
+        alert('Erro ao processar pedido. Você será redirecionado para o WhatsApp.');
+        window.open(`https://api.whatsapp.com/send?phone=${PHONE_NUMBER}&text=${encodeURIComponent(message)}`, '_blank');
+        setCart([]);
+        setCheckoutData(prev => ({ ...prev, troco: '', observacoes: '' }));
+        closeCart();
+      });
   };
 
   const canGoToStep2 = checkoutData.nome.trim().length >= 2 && checkoutData.telefone.replace(/\D/g, '').length >= 10;
@@ -220,7 +263,7 @@ Estado: Pendente${obsText}
 
         {categorias.length > 1 && (
           <div className="bg-white border-t border-gray-100 overflow-x-auto no-scrollbar">
-            <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3">
+            <div className="max-w-4xl mx-auto px-4 py-3 flex gap-3 items-center">
               {categorias.map(cat => (
                 <button key={cat} onClick={() => setActiveCategory(cat)}
                   className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-colors ${
@@ -229,6 +272,11 @@ Estado: Pendente${obsText}
                   {cat}
                 </button>
               ))}
+              <div className="w-px h-6 bg-gray-200 mx-1 hidden sm:block" />
+              <button onClick={() => setIsHalfAndHalfOpen(true)}
+                className="whitespace-nowrap px-4 py-2 rounded-full text-sm font-semibold transition-colors bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-md hover:opacity-90 flex items-center gap-1">
+                <Pizza size={16} /> Montar Meio a Meio
+              </button>
             </div>
           </div>
         )}
@@ -313,6 +361,7 @@ Estado: Pendente${obsText}
                   {checkoutStep === 1 && <><User size={20} className="text-red-600" /> Seus Dados</>}
                   {checkoutStep === 2 && <><MapPin size={20} className="text-red-600" /> Endereço</>}
                   {checkoutStep === 3 && <><CreditCard size={20} className="text-red-600" /> Pagamento</>}
+                  {checkoutStep === 4 && <><CheckCircle2 size={20} className="text-green-600" /> Concluído</>}
                 </h2>
               </div>
               <button onClick={closeCart} className="p-2 text-gray-400 bg-gray-100 rounded-full hover:bg-gray-200">
@@ -321,7 +370,7 @@ Estado: Pendente${obsText}
             </div>
 
             {/* Indicador de progresso (steps 1-3) */}
-            {checkoutStep > 0 && (
+            {checkoutStep > 0 && checkoutStep < 4 && (
               <div className="px-5 pt-3 pb-1 shrink-0">
                 <div className="flex items-center gap-1">
                   {[1, 2, 3].map(s => (
@@ -539,14 +588,103 @@ Estado: Pendente${obsText}
                 </div>
 
                 <div className="p-5 border-t border-gray-100 shrink-0">
-                  <button onClick={handleCheckout}
-                    className="w-full bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg transition-all text-base">
-                    <MessageCircle size={20} /> Enviar Pedido pelo WhatsApp
+                  <button onClick={handleCheckout} disabled={isCheckoutLoading}
+                    className="w-full bg-green-600 hover:bg-green-700 active:scale-95 text-white font-bold py-4 rounded-xl flex justify-center items-center gap-2 shadow-lg transition-all text-base disabled:opacity-70">
+                    {isCheckoutLoading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    ) : (
+                      <><CheckCircle2 size={20} /> Finalizar Pedido</>
+                    )}
                   </button>
-                  <p className="text-center text-xs text-gray-400 mt-2">Você será redirecionado para o WhatsApp</p>
+                  <p className="text-center text-xs text-gray-400 mt-2">Você receberá a confirmação pelo WhatsApp</p>
                 </div>
               </>
             )}
+
+            {/* ===== STEP 4: SUCESSO ===== */}
+            {checkoutStep === 4 && (
+              <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-4">
+                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-2">
+                  <CheckCircle2 size={48} className="text-green-600" />
+                </div>
+                <h2 className="text-2xl font-black text-gray-900">Pedido Enviado!</h2>
+                <p className="text-gray-500 text-sm">
+                  Acabamos de receber o seu pedido. Enviamos uma mensagem de confirmação automática para o seu WhatsApp!
+                </p>
+                <button onClick={closeCart}
+                  className="mt-8 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-xl transition-all">
+                  Voltar para o Cardápio
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL MEIO A MEIO */}
+      {isHalfAndHalfOpen && (
+        <div className="fixed inset-0 z-50 flex justify-center items-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsHalfAndHalfOpen(false)} />
+          <div className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-gray-50">
+              <h2 className="text-lg font-bold flex items-center gap-2">
+                <Pizza className="text-red-600" /> Montar Pizza Meio a Meio
+              </h2>
+              <button onClick={() => setIsHalfAndHalfOpen(false)} className="p-2 text-gray-400 hover:bg-gray-200 rounded-full bg-white shadow-sm border border-gray-100">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="p-5 overflow-y-auto space-y-5">
+              {/* Sabor 1 */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">1º Sabor (Metade 1)</label>
+                <select 
+                  className="w-full bg-white border-2 border-gray-200 rounded-xl p-3 outline-none focus:border-red-500 font-medium text-gray-700"
+                  value={half1?.id || ''}
+                  onChange={e => setHalf1(menuItems.find(i => i.id === Number(e.target.value)) || null)}
+                >
+                  <option value="">Selecione o primeiro sabor...</option>
+                  {menuItems.filter(i => ['Sabores Tradicionais', 'Sugestões Famosas', 'Pizzas Doces', 'Calzones'].includes(i.category)).map(i => (
+                    <option key={i.id} value={i.id}>{i.nome} - R$ {Number(i.price).toFixed(2).replace('.', ',')}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Sabor 2 */}
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-2">2º Sabor (Metade 2)</label>
+                <select 
+                  className="w-full bg-white border-2 border-gray-200 rounded-xl p-3 outline-none focus:border-red-500 font-medium text-gray-700"
+                  value={half2?.id || ''}
+                  onChange={e => setHalf2(menuItems.find(i => i.id === Number(e.target.value)) || null)}
+                >
+                  <option value="">Selecione o segundo sabor...</option>
+                  {menuItems.filter(i => ['Sabores Tradicionais', 'Sugestões Famosas', 'Pizzas Doces', 'Calzones'].includes(i.category)).map(i => (
+                    <option key={i.id} value={i.id}>{i.nome} - R$ {Number(i.price).toFixed(2).replace('.', ',')}</option>
+                  ))}
+                </select>
+              </div>
+
+              {half1 && half2 && (
+                <div className="bg-red-50 border border-red-100 rounded-2xl p-4 text-center mt-2">
+                  <p className="text-sm text-red-800 font-semibold mb-1">Preço da sua Meio a Meio:</p>
+                  <p className="text-3xl font-black text-red-600">
+                    R$ {((half1.price + half2.price) / 2).toFixed(2).replace('.', ',')}
+                  </p>
+                  <p className="text-xs text-red-600/80 mt-1">Valor médio entre os dois sabores</p>
+                </div>
+              )}
+            </div>
+
+            <div className="p-5 border-t border-gray-100 bg-gray-50">
+              <button 
+                onClick={addHalfAndHalfToCart}
+                disabled={!half1 || !half2}
+                className="w-full bg-red-600 hover:bg-red-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-xl transition-all shadow-md">
+                Adicionar ao Pedido
+              </button>
+            </div>
           </div>
         </div>
       )}

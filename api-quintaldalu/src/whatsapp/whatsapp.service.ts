@@ -110,6 +110,23 @@ Já escolheu? É só mandar o pedido que respondemos rapidinho! 😊`;
     };
   }
 
+  async sendOrderConfirmation(phone: string, message: string) {
+    if (this.connectionStatus !== 'CONNECTED' || !this.socket) {
+      this.logger.error('Não é possível enviar mensagem: WhatsApp não conectado.');
+      return false;
+    }
+    try {
+      const cleanPhone = phone.replace(/\D/g, '');
+      const jid = `55${cleanPhone}@s.whatsapp.net`;
+      await this.socket.sendMessage(jid, { text: message });
+      this.logger.log(`Mensagem de confirmação enviada para ${jid}`);
+      return true;
+    } catch (err) {
+      this.logger.error('Erro ao enviar mensagem de confirmação: ' + err.message);
+      return false;
+    }
+  }
+
   async logout() {
     if (this.socket) {
       await this.socket.logout();

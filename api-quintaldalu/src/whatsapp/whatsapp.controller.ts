@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards, Body } from '@nestjs/common';
 import { WhatsappService } from './whatsapp.service';
 import { AuthGuard } from '../auth/auth.guard';
 
@@ -17,5 +17,15 @@ export class WhatsappController {
   async logout() {
     await this.whatsappService.logout();
     return { message: 'WhatsApp desconectado com sucesso.' };
+  }
+
+  // Rota pública para o site enviar a confirmação
+  @Post('send-order')
+  async sendOrder(@Body() body: { phone: string; message: string }) {
+    if (!body.phone || !body.message) {
+      return { success: false, error: 'Telefone e mensagem são obrigatórios' };
+    }
+    const sent = await this.whatsappService.sendOrderConfirmation(body.phone, body.message);
+    return { success: sent };
   }
 }
