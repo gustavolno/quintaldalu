@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Store from './pages/Store';
 import {
-  Plus, Trash2, LogOut, ShieldCheck, Pizza, Edit,
+  Plus, Trash2, LogOut, ShieldCheck, Pizza, Pencil,
   TrendingUp, TrendingDown, DollarSign, Package,
   BarChart3, ChevronDown, Filter, ArrowUpCircle, ArrowDownCircle,
   MessageCircle, Smartphone, CheckCircle2, AlertCircle
@@ -405,7 +405,7 @@ function AdminDashboard() {
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
               <h2 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
                 {editingProductId ? (
-                  <><Edit size={18} className="text-red-600" /> Editar Produto</>
+                  <><Pencil size={18} className="text-red-600" /> Editar Produto</>
                 ) : (
                   <><Plus size={18} className="text-red-600" /> Novo Produto</>
                 )}
@@ -487,7 +487,7 @@ function AdminDashboard() {
                       <div className="flex gap-1">
                         <button onClick={() => handleEditClick(p)}
                           className="p-2 text-gray-400 hover:text-blue-600 transition-colors rounded-lg hover:bg-blue-50" title="Editar">
-                          <Edit size={16} />
+                          <Pencil size={16} />
                         </button>
                         <button onClick={() => handleDelete(p.id)}
                           className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg hover:bg-red-50" title="Excluir">
