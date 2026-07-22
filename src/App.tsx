@@ -5,11 +5,13 @@ import { Plus, Trash2, LogOut, ShieldCheck, Pizza } from 'lucide-react';
 
 interface Product {
   id: number;
-  name: string;
+  nome: string;
   description?: string;
   price: number;
   category: string;
 }
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // --- TELA DE LOGIN ---
 function Login() {
@@ -23,7 +25,7 @@ function Login() {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3000/auth/login', {
+      const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -104,7 +106,7 @@ function AdminDashboard() {
   // Carregar produtos da API
   const fetchProducts = async () => {
     try {
-      const res = await fetch('http://localhost:3000/products');
+      const res = await fetch(`${API_URL}/products`);
       const data = await res.json();
       setProducts(data);
     } catch (e) {
@@ -123,14 +125,14 @@ function AdminDashboard() {
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:3000/products', {
+      const res = await fetch(`${API_URL}/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          name,
+          nome: name,
           description,
           price: Number(price),
           category
@@ -153,7 +155,7 @@ function AdminDashboard() {
   const handleDelete = async (id: number) => {
     if (!confirm('Deseja realmente excluir este produto?')) return;
     try {
-      const res = await fetch(`http://localhost:3000/products/${id}`, {
+      const res = await fetch(`${API_URL}/products/${id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -259,7 +261,7 @@ function AdminDashboard() {
               {products.map((p) => (
                 <div key={p.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-100">
                   <div>
-                    <h4 className="font-bold text-sm text-gray-800">{p.name}</h4>
+                    <h4 className="font-bold text-sm text-gray-800">{p.nome}</h4>
                     <p className="text-xs text-gray-500">{p.category} • R$ {Number(p.price).toFixed(2)}</p>
                   </div>
                   <button

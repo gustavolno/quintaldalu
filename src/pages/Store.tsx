@@ -4,7 +4,7 @@ import { ShoppingCart, Plus, Minus, X, Trash2, ShoppingBag, Pizza, ChevronRight 
 interface MenuItem {
   id: number;
   category: string;
-  name: string;
+  nome: string;
   description: string;
   price: number;
   image: string;
@@ -13,6 +13,8 @@ interface MenuItem {
 interface CartItem extends MenuItem {
   quantity: number;
 }
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export default function Store() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
@@ -24,10 +26,11 @@ export default function Store() {
 
   // --- INTEGRAÇÃO COM A API NESTJS ---
   useEffect(() => {
-    fetch('http://localhost:3000/products')
+    fetch(`${API_URL}/products`)
       .then((response) => response.json())
       .then((data) => {
-        const formattedData = data.map((item: any) => ({
+        const activeItems = data.filter((item: any) => item.ativo !== false);
+        const formattedData = activeItems.map((item: any) => ({
           ...item,
           image: item.image || 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60'
         }));
@@ -43,8 +46,22 @@ export default function Store() {
   // --- LÓGICA DE CATEGORIAS ---
   const categorias = ['Todas', ...Array.from(new Set(menuItems.map(item => item.category).filter(Boolean)))];
   
+  const categoryOrder = [
+    'Sabores Tradicionais',
+    'Sugestões Famosas',
+    'Pizzas Doces',
+    'Calzones',
+    'Bebidas'
+  ];
+
   const filteredItems = activeCategory === 'Todas' 
-    ? menuItems 
+    ? [...menuItems].sort((a, b) => {
+        const indexA = categoryOrder.indexOf(a.category);
+        const indexB = categoryOrder.indexOf(b.category);
+        const valA = indexA === -1 ? 99 : indexA;
+        const valB = indexB === -1 ? 99 : indexB;
+        return valA - valB;
+      })
     : menuItems.filter(item => item.category === activeCategory);
 
   // --- LÓGICA DO CARRINHO ---
@@ -82,9 +99,9 @@ export default function Store() {
   // --- CHECKOUT WHATSAPP ---
   const handleCheckout = () => {
     if (cart.length === 0) return;
-    const itemsText = cart.map(item => `${item.quantity}x ${item.name} (R$ ${(item.price * item.quantity).toFixed(2)})`).join('\n');
+    const itemsText = cart.map(item => `${item.quantity}x ${item.nome} (R$ ${(item.price * item.quantity).toFixed(2)})`).join('\n');
     const message = `*NOVO PEDIDO - Quintal da Lu* 🍕\n\n*Itens:*\n${itemsText}\n\n*Forma de Pagamento:* ${paymentMethod}\n*Total a pagar:* R$ ${totalPrice.toFixed(2)}\n\n_Por favor, informe seu endereço para entrega._`;
-    const phoneNumber = "5511999999999"; 
+    const phoneNumber = "5561999733380"; 
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -165,13 +182,13 @@ export default function Store() {
             {filteredItems.map((pizza) => (
               <div key={pizza.id} className="bg-white rounded-2xl p-3 shadow-sm border border-gray-100 flex gap-4 hover:shadow-md transition-shadow">
                 <div className="w-28 h-28 shrink-0">
-                  <img src={pizza.image} alt={pizza.name} className="w-full h-full object-cover rounded-xl" />
+                  <img src={pizza.image} alt={pizza.nome} className="w-full h-full object-cover rounded-xl" />
                 </div>
                 
                 <div className="flex flex-col justify-between flex-1 py-1">
                   <div>
-                    <h4 className="text-base font-bold text-gray-900 leading-tight">{pizza.name}</h4>
-                    <p className="text-gray-500 text-xs mt-1 line-clamp-2">{pizza.description}</p>
+                    <h4 className="text-base font-bold text-gray-900 leading-tight">{pizza.nome}</h4>
+                    <p className="text-gray-500 text-xs mt-1">{pizza.description}</p>
                   </div>
                   
                   <div className="flex justify-between items-center mt-2">
@@ -230,7 +247,7 @@ export default function Store() {
                   {cart.map((item) => (
                     <div key={item.id} className="flex gap-3 items-center border-b border-gray-50 pb-4">
                       <div className="flex-1">
-                        <h4 className="font-bold text-sm text-gray-900">{item.name}</h4>
+                        <h4 className="font-bold text-sm text-gray-900">{item.nome}</h4>
                         <p className="text-green-600 font-bold text-sm mt-1">R$ {(item.price * item.quantity).toFixed(2).replace('.', ',')}</p>
                       </div>
                       

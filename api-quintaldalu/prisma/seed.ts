@@ -22,56 +22,56 @@ async function main() {
     //         SABORES TRADICIONAIS
     // ==========================================
     {
-      name: 'Calabresa',
+      nome: 'Calabresa',
       description: 'Molho de tomate, muçarela, calabresa fatiada, cebola e orégano.',
       price: 45.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Frango com Catupiry',
+      nome: 'Frango com Catupiry',
       description: 'Molho de tomate, frango desfiado temperado, Catupiry original e orégano.',
       price: 48.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Portuguesa',
+      nome: 'Portuguesa',
       description: 'Molho de tomate, muçarela, presunto, ovos cozidos, cebola, pimentão, azeitonas e orégano.',
       price: 49.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Marguerita',
+      nome: 'Marguerita',
       description: 'Molho de tomate, muçarela, rodelas de tomate fresco, manjericão fresco e orégano.',
       price: 42.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Bacon',
+      nome: 'Bacon',
       description: 'Molho de tomate, muçarela, bacon crocante, cebola e orégano.',
       price: 47.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Calabresa Especial',
+      nome: 'Calabresa Especial',
       description: 'Molho de tomate, muçarela, calabresa fatiada, cream cheese/catupiry, bacon em cubos, cebola e orégano.',
       price: 52.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Atum',
+      nome: 'Atum',
       description: 'Molho de tomate, atum ralado premium, cebola fatiada, azeitonas e orégano.',
       price: 54.90,
       category: 'Sabores Tradicionais',
       image: 'https://images.unsplash.com/photo-1573821663912-569905455b1c?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Milho',
+      nome: 'Milho',
       description: 'Molho de tomate, muçarela, milho verde selecionado e orégano.',
       price: 40.90,
       category: 'Sabores Tradicionais',
@@ -82,35 +82,35 @@ async function main() {
     //         SUGESTÕES FAMOSAS
     // ==========================================
     {
-      name: 'Moda da Casa',
+      nome: 'Moda da Casa',
       description: 'Molho de tomate, atum, muçarela, cebola caramelizada e tomate-cereja.',
       price: 56.90,
       category: 'Sugestões Famosas',
       image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Mussarela Clássica',
+      nome: 'Mussarela Clássica',
       description: 'Molho de tomate, generosa camada de muçarela, rodelas de tomate e orégano.',
       price: 39.90,
       category: 'Sugestões Famosas',
       image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Lombo com Catupiry',
+      nome: 'Lombo com Catupiry',
       description: 'Molho de tomate, muçarela, lombo canadense fatiado, Catupiry e orégano.',
       price: 54.90,
       category: 'Sugestões Famosas',
       image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Quatro Queijos',
+      nome: 'Quatro Queijos',
       description: 'Molho de tomate, muçarela, provolone, gorgonzola e Catupiry.',
       price: 52.90,
       category: 'Sugestões Famosas',
       image: 'https://images.unsplash.com/photo-1579684947550-22e945225d9a?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Carne Seca com Cream Cheese',
+      nome: 'Carne Seca com Cream Cheese',
       description: 'Molho de tomate, muçarela, carne seca desfiada e temperada, cream cheese e cebola.',
       price: 58.90,
       category: 'Sugestões Famosas',
@@ -121,28 +121,28 @@ async function main() {
     //              PIZZAS DOCES
     // ==========================================
     {
-      name: 'Chocolate com Morango',
+      nome: 'Chocolate com Morango',
       description: 'Base de chocolate ao leite cremoso, coberta com morangos frescos ou granulado.',
       price: 45.90,
       category: 'Pizzas Doces',
       image: 'https://images.unsplash.com/photo-1587314168485-3236d6710814?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Prestigio / Chocolate com Coco',
+      nome: 'Prestigio / Chocolate com Coco',
       description: 'Base de chocolate ao leite cremoso coberta com coco ralado.',
       price: 44.90,
       category: 'Pizzas Doces',
       image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Romeu e Julieta',
+      nome: 'Romeu e Julieta',
       description: 'Muçarela (ou requeijão) com goiabada cremosa.',
       price: 42.90,
       category: 'Pizzas Doces',
-      image: 'https://images.unsplash.com/photo-1551024506-0cb9842f65a1?w=500&auto=format&fit=crop&q=60'
+      image: '/romeu-e-julieta.png'
     },
     {
-      name: 'Banana com Canela',
+      nome: 'Banana com Canela',
       description: 'Base de creme, muçarela, rodelas de banana, açúcar e canela polvilhada.',
       price: 38.90,
       category: 'Pizzas Doces',
@@ -153,35 +153,35 @@ async function main() {
     //               CALZONES
     // ==========================================
     {
-      name: 'Calzone de Frango com Catupiry',
+      nome: 'Calzone de Frango com Catupiry',
       description: 'Massa fechada recheada com frango desfiado temperado, muçarela, Catupiry original, molho e orégano.',
       price: 48.90,
       category: 'Calzones',
       image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Calzone Português',
+      nome: 'Calzone Português',
       description: 'Massa fechada recheada com presunto, muçarela, ovos, cebola, pimentão, azeitonas e molho.',
       price: 50.90,
       category: 'Calzones',
       image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Calzone Quatro Queijos',
+      nome: 'Calzone Quatro Queijos',
       description: 'Massa fechada cremosa de muçarela, provolone, gorgonzola e Catupiry.',
       price: 52.90,
       category: 'Calzones',
       image: 'https://images.unsplash.com/photo-1579684947550-22e945225d9a?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Calzone de Calabresa com Bacon',
+      nome: 'Calzone de Calabresa com Bacon',
       description: 'Massa fechada recheada com calabresa fatiada, bacon crocante, muçarela, cebola e molho.',
       price: 51.90,
       category: 'Calzones',
       image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Calzone Doce de Chocolate',
+      nome: 'Calzone Doce de Chocolate',
       description: 'Massa fechada recheada com generosa camada de chocolate ao leite e morangos.',
       price: 49.90,
       category: 'Calzones',
@@ -192,42 +192,42 @@ async function main() {
     //               BEBIDAS
     // ==========================================
     {
-      name: 'Refrigerante 2 Litros',
+      nome: 'Refrigerante 2 Litros',
       description: 'Guaraná Antarctica, Coca-Cola, Fanta, Sprite (Escolha no WhatsApp)',
       price: 14.00,
       category: 'Bebidas',
       image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Refrigerante 1L / 1,5L',
+      nome: 'Refrigerante 1L / 1,5L',
       description: 'Guaraná Antarctica, Coca-Cola (Escolha no WhatsApp)',
       price: 10.00,
       category: 'Bebidas',
       image: 'https://images.unsplash.com/photo-1581006852262-e4307cf6283a?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Refrigerante Lata 350ml',
+      nome: 'Refrigerante Lata 350ml',
       description: 'Coca-Cola, Guaraná, Sprite, Fanta (Escolha no WhatsApp)',
       price: 6.00,
       category: 'Bebidas',
       image: 'https://images.unsplash.com/photo-1625772299848-391b6a87d7b3?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Suco Del Valle Lata 300ml',
+      nome: 'Suco Del Valle Lata 300ml',
       description: 'Uva, Pêssego, Maracujá, Goiaba (Escolha no WhatsApp)',
       price: 7.00,
       category: 'Bebidas',
       image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Suco Natural Integral 900ml',
+      nome: 'Suco Natural Integral 900ml',
       description: 'Laranja, Uva (Escolha no WhatsApp)',
       price: 15.00,
       category: 'Bebidas',
       image: 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=500&auto=format&fit=crop&q=60'
     },
     {
-      name: 'Água Mineral 500ml',
+      nome: 'Água Mineral 500ml',
       description: 'Com ou Sem gás',
       price: 4.00,
       category: 'Bebidas',

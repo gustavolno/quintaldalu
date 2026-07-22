@@ -7,7 +7,7 @@ export class CreateProductDto {
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  nome: string;
 
   @IsString()
   @IsNotEmpty()
@@ -23,5 +23,5 @@ export class CreateProductDto {
 
   @IsBoolean()
   @IsOptional()
-  isActive?: boolean;
+  ativo?: boolean;
 }
