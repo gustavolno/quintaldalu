@@ -29,7 +29,7 @@ interface CheckoutData {
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-const TAXA_ENTREGA = 5.00;
+const TAXA_ENTREGA = 8.00;
 const PHONE_NUMBER = '5561999733380';
 
 function generateOrderNumber() {

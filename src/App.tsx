@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import Store from './pages/Store';
 import {
-  Plus, Trash2, LogOut, ShieldCheck, Pizza, Pencil,
+  Plus, Trash2, LogOut, ShieldCheck, Pizza, Pencil, Search,
   TrendingUp, TrendingDown, DollarSign, Package,
   BarChart3, ChevronDown, Filter, ArrowUpCircle, ArrowDownCircle,
   MessageCircle, Smartphone, CheckCircle2, AlertCircle
@@ -105,6 +105,7 @@ function AdminDashboard() {
 
   // Estado Produtos
   const [products, setProducts] = useState<Product[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
@@ -470,15 +471,30 @@ function AdminDashboard() {
 
             {/* Listagem de Produtos */}
             <div className="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h2 className="text-base font-bold text-gray-900 mb-4">
-                Produtos no Cardápio
-                <span className="ml-2 text-xs bg-gray-100 text-gray-500 font-semibold px-2 py-0.5 rounded-full">{products.length}</span>
-              </h2>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-4">
+                <h2 className="text-base font-bold text-gray-900 flex items-center">
+                  Produtos no Cardápio
+                  <span className="ml-2 text-xs bg-gray-100 text-gray-500 font-semibold px-2 py-0.5 rounded-full">{products.length}</span>
+                </h2>
+                <div className="relative w-full sm:w-64">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search size={16} className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar produto..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-9 pr-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all"
+                  />
+                </div>
+              </div>
+              
               {products.length === 0 ? (
                 <p className="text-gray-400 text-sm text-center py-8">Nenhum produto cadastrado ainda.</p>
               ) : (
                 <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-1">
-                  {products.map((p) => (
+                  {products.filter(p => p.nome.toLowerCase().includes(searchQuery.toLowerCase()) || (p.category && p.category.toLowerCase().includes(searchQuery.toLowerCase()))).map((p) => (
                     <div key={p.id} className={`flex justify-between items-center p-3 rounded-xl border transition-all ${p.ativo !== false ? 'bg-gray-50 border-gray-100' : 'bg-red-50 border-red-100 opacity-60'}`}>
                       <div>
                         <h4 className="font-bold text-sm text-gray-800">{p.nome}</h4>
