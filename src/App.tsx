@@ -14,6 +14,7 @@ interface Product {
   price: number;
   category: string;
   ativo: boolean;
+  image?: string;
 }
 
 interface Transacao {
