@@ -134,12 +134,26 @@ function AdminDashboard() {
   }, [activeTab, filtroInicio, filtroFim]);
 
   // --- Produtos ---
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch(`${API_URL}/products`);
-      const data = await res.json();
-      setProducts(data);
-    } catch (e) { console.error(e); }
+  const fetchProducts = () => {
+    fetch(`${API_URL}/products`)
+      .then((res) => res.json())
+      .then((data) => setProducts(data))
+      .catch((err) => console.error(err));
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('A imagem é muito grande! Escolha uma imagem de até 5MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleCreateProduct = async (e: React.FormEvent) => {
@@ -287,9 +301,20 @@ function AdminDashboard() {
                     className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all" required />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Link da Imagem (opcional)</label>
-                  <input type="url" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://... (ou deixe vazio para padrão)"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 transition-all" />
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Imagem do Produto (opcional)</label>
+                  <div className="flex gap-2 items-center">
+                    <input type="file" accept="image/*" onChange={handleImageUpload}
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl p-1.5 text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100" />
+                  </div>
+                  {image && (
+                    <div className="mt-2">
+                      <p className="text-xs text-green-600 mb-1 font-semibold">Imagem anexada com sucesso!</p>
+                      <img src={image} alt="Preview" className="w-16 h-16 object-cover rounded-lg border border-gray-200" />
+                    </div>
+                  )}
+                  <div className="mt-2 text-xs text-gray-400">Ou cole o link direto:</div>
+                  <input type="url" value={image} onChange={(e) => setImage(e.target.value)} placeholder="https://..."
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-2.5 text-sm outline-none focus:border-red-500 mt-1" />
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Categoria</label>
